@@ -84,7 +84,7 @@ jobs:
           php bin/console sass:build
 
       - name: Start Symfony Server
-        run: php bin/console server:start --env=test --no-interaction --detach
+        run: symfony server:start --detach
 
       - name: Tests
         env: 
