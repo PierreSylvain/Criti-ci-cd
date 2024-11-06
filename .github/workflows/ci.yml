@@ -83,6 +83,9 @@ jobs:
       - name: Start Symfony Server
         run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
+      - name: Check Symfony Server Logs
+        run: cat var/log/dev.log
+
       - name: Wait for Symfony Server
         run: |
           until curl -sSf http://127.0.0.1:8000; do
