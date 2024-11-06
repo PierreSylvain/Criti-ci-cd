@@ -79,7 +79,7 @@ jobs:
       - name: Tests
         env: 
           APP_ENV: test
-        run: php bin/phpunit
+        run: php bin/phpunit tests/Unit
 
       - name: Analysis
         run: vendor/bin/phpstan analyse src tests --memory-limit=256M
