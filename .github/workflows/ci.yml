@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: mysql://root@127.0.0.1:3306/criti-pixel?charset=utf8mb4
+      ENV: test
 
     services:
       mysql:
@@ -56,15 +57,7 @@ jobs:
 
       - name: Install Dependencies
         run: composer install --no-scripts --no-interaction --no-progress --prefer-dist
-
-      - name: Wait for MySQL
-        run: |
-          until mysqladmin ping -h 127.0.0.1 -u root; do
-            echo "Waiting for MySQL..."
-            sleep 5
-          done
-          sleep 10
-
+      
       - name: Wait for MySQL Initialization
         run: |
           until docker logs ${{ job.services.mysql.id }} 2>&1 | grep -q "MySQL init process done. Ready for start up."; do
@@ -82,13 +75,13 @@ jobs:
           php bin/console doctrine:schema:update --force --env=test
           php bin/console doctrine:fixtures:load --env=test --no-interaction --purger=delete
           php bin/console sass:build
-
+      - name: Install Symfony CLI
+        run: wget https://get.symfony.com/cli/installer -O - | bash
+        
       - name: Start Symfony Server
-        run: symfony server:start --detach
+        run: symfony server:start --daemon
 
-      - name: Tests
-        env: 
-          APP_ENV: test
+      - name: Tests        
         run: php bin/phpunit
 
 #      - name: Analysis
