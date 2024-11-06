@@ -1,93 +1,32 @@
-name: Continuous integration
-
-on:
-  push:
-    branches: [ "CI-Test" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
+name: CI project
+on: [push]
 
 jobs:
-  symfony-tests:
+  ci:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: mysql://root@127.0.0.1:3306/criti-pixel?charset=utf8mb4
-      ENV: test
-      APP_SECRET: b309d4ea29e10ef7203f0066db6222d5
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-          MYSQL_DATABASE: criti-pixel
-          MYSQL_ROOT_PASSWORD: ""
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
-      - uses: shivammathur/setup-php@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.2'
+          extensions: pdo_mysql
 
-      - uses: actions/checkout@v4
-        with:
-          ref: CI-Test      
+      - name: Install composer dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts
 
-      - name: Update Composer
-        run: composer self-update
-        
-#      - name: Cache Composer packages
-#        id: composer-cache
-#        uses: actions/cache@v3
-#        with:
-#          path: vendor
-#          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-php-
-
-      - name: Install Dependencies
-        run: composer install --no-scripts --no-interaction --no-progress --prefer-dist
-      
-      - name: Wait for MySQL Initialization
+      - name: Create Database & load Fixtures
         run: |
-          until docker logs ${{ job.services.mysql.id }} 2>&1 | grep -q "MySQL init process done. Ready for start up."; do
-            echo "Waiting for MySQL initialization..."
-            sleep 5
-          done
-
-      - name: Check MySQL Logs
-        run: docker logs ${{ job.services.mysql.id }}
-
-      - name: Create Database
-        run: |
-          php bin/console doctrine:database:drop --force --if-exists --env=test
+          php bin/console doctrine:database:drop --env=test --force           
           php bin/console doctrine:database:create --env=test
-          php bin/console doctrine:schema:update --force --env=test
-          php bin/console doctrine:fixtures:load --env=test --no-interaction
-          php bin/console sass:build
+          php bin/console doctrine:schema:create --env=test
+          php bin/console doctrine:fixtures:load -n --env=test
 
-      - name: Install Symfony CLI
-        run: wget https://get.symfony.com/cli/installer -O - | bash
+      - name: Run tests
+        run: php bin/phpunit tests/
 
-      - name: Move Symfony CLI
-        run: mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
-    
-      - name: Start Symfony Server
-        run: symfony server:start --daemon --no-tls     
-
-      - name: Check Symfony Server
-        run: symfony server:status      
-
-      - name: Tests        
-        run: php bin/phpunit
-
-#      - name: Analysis
-#        run: vendor/bin/phpstan analyse src tests --memory-limit=256M
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse src -l 7
