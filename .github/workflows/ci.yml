@@ -84,7 +84,7 @@ jobs:
         run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
       - name: List files
-        run: ls -la
+        run: ls -la var/log
 
       - name: Check Symfony Server Logs
         run: cat var/log/test.log
