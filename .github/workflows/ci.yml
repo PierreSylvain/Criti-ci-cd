@@ -77,9 +77,9 @@ jobs:
           php bin/console sass:build
       - name: Install Symfony CLI
         run: wget https://get.symfony.com/cli/installer -O - | bash
-        
+
       - name: Start Symfony Server
-        run: symfony server:start --daemon
+        run: /home/runner/.symfony5/bin/symfony server:start --daemon
 
       - name: Tests        
         run: php bin/phpunit
