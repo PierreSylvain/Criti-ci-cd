@@ -74,7 +74,7 @@ jobs:
           php bin/console doctrine:database:drop --force --if-exists --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:schema:update --force --env=test
-          php bin/console doctrine:fixtures:load --env=test --no-interaction --purger=delete
+          php bin/console doctrine:fixtures:load --env=test --no-interaction
           php bin/console sass:build
 
       - name: Install Symfony CLI
@@ -95,7 +95,7 @@ jobs:
 
       - name: Check Symfony Server Logs
         if: failure()
-        run: cat var/log/dev.log
+        run: cat var/log/test.log
 
       - name: Tests        
         run: php bin/phpunit
