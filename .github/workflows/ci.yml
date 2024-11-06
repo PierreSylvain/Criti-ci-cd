@@ -81,14 +81,18 @@ jobs:
         run: wget https://get.symfony.com/cli/installer -O - | bash
 
       - name: Start Symfony Server
-        run: /home/runner/.symfony5/bin/symfony server:start --daemon
+        run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
       - name: Wait for Symfony Server
         run: |
           until curl -sSf http://127.0.0.1:8000; do
             echo "Waiting for Symfony server..."
-            sleep 5
+            sleep 20
           done
+
+      - name: Check Symfony Server Logs
+        if: failure()
+        run: cat var/log/dev.log
 
       - name: Tests        
         run: php bin/phpunit
