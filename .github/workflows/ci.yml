@@ -77,11 +77,11 @@ jobs:
       - name: Install Symfony CLI
         run: wget https://get.symfony.com/cli/installer -O - | bash
 
-      - name: Create Log Directory
-        run: mkdir -p var/log
-
+      - name: Move Symfony CLI
+        run: mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
+    
       - name: Start Symfony Server
-        run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
+        run: symfony server:start --daemon --no-tls
 
       - name: Check Symfony Server Logs
         run: symfony server:log
