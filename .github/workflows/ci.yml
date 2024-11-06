@@ -83,10 +83,13 @@ jobs:
           php bin/console doctrine:fixtures:load --env=test --no-interaction --purger=delete
           php bin/console sass:build
 
+      - name: Start Symfony Server
+        run: php bin/console server:run --env=test --no-interaction --detach
+
       - name: Tests
         env: 
           APP_ENV: test
-        run: php bin/phpunit tests/Auth
+        run: php bin/phpunit
 
 #      - name: Analysis
 #        run: vendor/bin/phpstan analyse src tests --memory-limit=256M
