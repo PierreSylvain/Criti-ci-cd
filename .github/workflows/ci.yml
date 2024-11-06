@@ -84,7 +84,7 @@ jobs:
         run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
       - name: Check Symfony Server Logs
-        run: cat var/log/dev.log
+        run: cat var/log/test.log
 
       - name: Wait for Symfony Server
         run: |
