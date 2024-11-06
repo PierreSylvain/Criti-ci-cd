@@ -65,6 +65,9 @@ jobs:
           done
           sleep 10
 
+      - name: Check MySQL Logs
+        run: docker logs ${{ job.services.mysql.id }}
+
       - name: Create Database
         run: |
           php bin/console doctrine:database:drop --force --if-exists --env=test
