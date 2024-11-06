@@ -75,11 +75,19 @@ jobs:
           php bin/console doctrine:schema:update --force --env=test
           php bin/console doctrine:fixtures:load --env=test --no-interaction --purger=delete
           php bin/console sass:build
+
       - name: Install Symfony CLI
         run: wget https://get.symfony.com/cli/installer -O - | bash
 
       - name: Start Symfony Server
         run: /home/runner/.symfony5/bin/symfony server:start --daemon
+
+      - name: Wait for Symfony Server
+        run: |
+          until curl -sSf http://127.0.0.1:8000 > /dev/null; do
+            echo "Waiting for Symfony server..."
+            sleep 5
+          done
 
       - name: Tests        
         run: php bin/phpunit
