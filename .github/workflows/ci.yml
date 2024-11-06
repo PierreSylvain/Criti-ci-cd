@@ -84,14 +84,7 @@ jobs:
         run: symfony server:start --daemon --no-tls     
 
       - name: Check Symfony Server
-        run: symfony server:status
-        
-      - name: Wait for Symfony Server
-        run: |
-          until curl -sSf http://127.0.0.1:8000; do
-            echo "Waiting for Symfony server..."
-            sleep 20
-          done
+        run: symfony server:status      
 
       - name: Tests        
         run: php bin/phpunit
