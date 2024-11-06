@@ -83,22 +83,24 @@ jobs:
       - name: Start Symfony Server
         run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
-      - name: List files
-        run: ls -la var/log
-
       - name: Check Symfony Server Logs
-        run: cat var/log/test.log
+        run: symfony server:log
 
-      - name: Wait for Symfony Server
-        run: |
-          until curl -sSf http://127.0.0.1:8000; do
-            echo "Waiting for Symfony server..."
-            sleep 20
-          done
+#      - name: Wait for Symfony Server
+#        run: |
+#          until curl -sSf http://127.0.0.1:8000; do
+#            echo "Waiting for Symfony server..."
+#            sleep 20
+#          done
 
-      - name: Check Symfony Server Logs
-        if: failure()
-        run: cat var/log/test.log
+#      - name: Check Symfony Server Logs
+#        if: failure()
+#        run: |
+#          if [ -f var/log/test.log ]; then
+#            cat var/log/test.log
+#          else
+#            echo "No log file found"
+#          fi
 
       - name: Tests        
         run: php bin/phpunit
