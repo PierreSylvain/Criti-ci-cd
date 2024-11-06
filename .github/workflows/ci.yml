@@ -83,6 +83,9 @@ jobs:
       - name: Start Symfony Server
         run: /home/runner/.symfony5/bin/symfony server:start --daemon --no-tls
 
+      - name: Create Log Directory
+        run: mkdir -p var/log
+
       - name: Check Symfony Server Logs
         run: cat var/log/test.log
 
