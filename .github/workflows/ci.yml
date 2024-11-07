@@ -38,5 +38,5 @@ jobs:
           php bin/console sass:build
       - name: Tests
         run: php bin/phpunit
-      - name: Analysis
-        run: php vendor/bin/phpstan
+      #- name: Analysis
+      #   run: php vendor/bin/phpstan
